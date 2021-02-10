@@ -84,12 +84,14 @@ DeltaMaxValue(ncclDataType_t type)
         case ncclDouble: return 1e-12;
         case ncclInt:
 #if NCCL_MAJOR >= 2
+        case ncclInt8:
         case ncclUint8:
         // case ncclInt32:
         case ncclUint32:
 #endif
         case ncclInt64:
         case ncclUint64: return 1e-200;
+        case ncclNumTypes: break;
     }
     return 1e-200;
 }
@@ -190,6 +192,7 @@ CheckDelta(void* expected, void* results, size_t count, ncclDataType_t type,
         case ncclUint64:
             deltaKern<uint64_t, 512><<<1, 512>>>(results, expected, count, devmax);
             break;
+        case ncclNumTypes: break;
     }
     CUDACHECK(cudaDeviceSynchronize());
     return testSuccess;
