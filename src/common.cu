@@ -6,6 +6,7 @@
 
 #include "common.h"
 #include "cuda.h"
+#include <cmath>
 #include <cstdio>
 #include <getopt.h>
 #include <libgen.h>
@@ -491,7 +492,7 @@ startColl(struct threadArgs* args, ncclDataType_t type, ncclRedOp_t op, int root
 
     // Try to change offset for each iteration so that we avoid cache effects and catch
     // race conditions in ptrExchange
-    size_t totalnbytes = max(args->sendBytes, args->expectedBytes);
+    size_t totalnbytes = std::max(args->sendBytes, args->expectedBytes);
     size_t shift       = (totalnbytes * iter) % args->maxbytes;
     if(shift + totalnbytes > args->maxbytes)
         shift = 0;
@@ -678,7 +679,7 @@ TimeTest(struct threadArgs* args, ncclDataType_t type, const char* typeName,
             ((args->stepfactor > 1) ? size * args->stepfactor : size + args->stepbytes))
     {
         setupArgs(size, type, args);
-        print_line_header(max(args->sendBytes, args->expectedBytes),
+        print_line_header(std::max(args->sendBytes, args->expectedBytes),
                           args->nbytes / wordSize(type), typeName, opName, root);
         TESTCHECK(BenchTime(args, type, op, root, 0));
         TESTCHECK(BenchTime(args, type, op, root, 1));
